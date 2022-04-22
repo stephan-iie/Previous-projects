@@ -1,0 +1,465 @@
+---
+title: "EDA"
+output: html_document
+---
+
+
+```{r}
+rsconnect::setAccountInfo(name=)
+```
+
+
+```{r}
+
+
+library("readr")
+
+r=read.csv("winequality-red.csv", sep=";", header=TRUE)
+w=read.csv("winequality-white.csv", sep=";", header=TRUE)
+r
+w
+
+ggplot(w, aes(x=quality, y=density)) + geom_point()
+
+
+
+names(w)
+
+```
+
+```{r}
+
+#install.packages("GGally")
+library("GGally")
+library("ggplot2")
+ggpairs(r)
+
+
+
+
+```
+
+```{r}
+
+ggpairs(w)
+
+```
+
+Correlation matrix:
+
+```{r}
+#install.packages("qtlcharts")
+
+library(qtlcharts)
+#note: for the ones greater than 0.2
+iplotCorr(r) # citric acid, sulphates, alcohol | acidity (neg)
+iplotCorr(w)#alcohol | chlorides and density (neg)
+
+
+
+```
+
+
+
+```{r}
+library(ggplot2)
+library(ggfortify)
+
+```
+
+```{r}
+
+
+summary(r)
+ggplot(r, aes(x=quality))+geom_histogram(bins = 6)
+
+summary(w)
+ggplot(w, aes(x=quality))+geom_histogram(bins = 6)
+
+```
+```{r}
+r
+```
+
+
+```{r}
+
+
+# citric acid, sulphates, alcohol | acidity (neg)
+library(dplyr)
+
+r2=r%>%select(volatile.acidity,sulphates,alcohol,quality)
+ggpairs(r2)
+
+w2 =w%>% select(quality, alcohol, volatile.acidity, residual.sugar, free.sulfur.dioxide, density, pH, sulphates, fixed.acidity)
+ggpairs(w2)
+
+```
+
+Checking for linearity + assumptions = get rid pof sulphates
+```{r}
+
+ggplot(r2, aes(x=sulphates,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=F)
+ggplot(r2, aes(x=volatile.acidity,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=F)
+ggplot(r2, aes(x=alcohol,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=F)
+
+
+
+
+lms=lm(quality~sulphates, data=r2)
+autoplot(lms, which =c(1,2))
+
+lmv=lm(quality~volatile.acidity, data=r2)
+autoplot(lmv, which =c(1,2))
+
+lma=lm(quality~alcohol, data=r2)
+autoplot(lma, which =c(1,2))
+
+
+lmt=lm(quality~volatile.acidity+alcohol, data=r2)
+autoplot(lmt, which =c(1,2))
+summary(lmt)
+
+```
+```{r}
+lm1=lm(quality~alcohol+sulphates+volatile.acidity+residual.sugar+pH+fixed.acidity,data=r)
+lm1
+```
+
+```{r}
+ggplot(w2, aes(x=alcohol,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=F)
+lms=lm(quality~sulphates, data=w2)
+autoplot(lms, which =c(1,2))
+lms=lm(quality~alcohol, data=w2)
+autoplot(lms, which =c(1,2))
+lms=lm(quality~volatile.acidity, data=w2)
+autoplot(lms, which =c(1,2))
+lms=lm(quality~residual.sugar, data=w2)
+autoplot(lms, which =c(1,2))
+lms=lm(quality~free.sulfur.dioxide, data=w2)
+autoplot(lms, which =c(1,2)) #No dice
+lms=lm(quality~density, data=w2)
+autoplot(lms, which =c(1,2)) # do dice
+lms=lm(quality~pH, data=w2)
+autoplot(lms, which =c(1,2))
+lms=lm(quality~fixed.acidity, data=w2)
+autoplot(lms, which =c(1,2))
+
+#(quality, alcohol, volatile.acidity, residual.sugar, free.sulfur.dioxide, density, pH, sulphates, fixed.acidity)
+```
+
+```{r}
+
+
+lm1=lm(quality~.,data=r)
+autoplot(lm1,which=c(1:2))
+lmb=step(lm1)
+autoplot(lmb,which=c(1:2))
+summary(lmb)
+```
+```{r}
+
+lm0=lm(quality~1,data=r)
+lmf=step(lm0,scope=list(lower=lm0,upper=lm1),direction="forward")
+autoplot(lmf,which=c(1:2))
+summary(lmf)
+```
+install.packages("leaps")
+```{r}
+lm1=lm(quality~.,data=w)
+autoplot(lm1,which=c(1:2))
+lmb=step(lm1)
+autoplot(lmb,which=c(1:2))
+summary(lmb)
+```
+```{r}
+
+lm0=lm(quality~1,data=w)
+lmf=step(lm0,scope=list(lower=lm0,upper=lm1),direction="forward")
+autoplot(lmf,which=c(1:2))
+summary(lmf)
+```
+
+```{r}
+
+library(leaps)
+exh=regsubsets(quality~.,data=r)
+summary(exh)$outmat
+
+```
+
+get rid of :
+free.sulfur.dioxide --> not linear+norm
+total sf - notlinear+norm
+```{r}
+exh=regsubsets(quality~.,data=r)
+summary(exh)$outmat
+```
+
+bakward lm model
+
+Call:
+lm(formula = quality ~ alcohol + volatile.acidity + residual.sugar + 
+    free.sulfur.dioxide + density + pH + sulphates + fixed.acidity, 
+    data = w)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      WHITE WINEMODEL - RECHCKING LINEARITY 
+    
+    
+    
+    
+    
+
+
+```{r}
+
+
+ggplot(w, aes(x=alcohol,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+ggplot(w, aes(x=volatile.acidity,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+ggplot(w, aes(x=residual.sugar,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+ggplot(w, aes(x=free.sulfur.dioxide,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+ggplot(w, aes(x=density,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+ggplot(w, aes(x=pH,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+ggplot(w, aes(x=sulphates,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+ggplot(w, aes(x=fixed.acidity,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+ggplot(w, aes(x=chlorides,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+
+```
+white wine - get rid of sulphates,ph, free sulfur dioxide, resdual sugar, 
+
+FINAL MODEL:Alcohol,olatile.acidity, density, fixed acidiyy
+
+```{r}
+w4=w%>%select(quality,alcohol,volatile.acidity, density,  fixed.acidity)
+vif(w4)
+
+```
+
+
+redoing stepwise wiht the following airbales
+
+```{r}
+
+wl1=lm(quality~.,data=w4)
+wl0=lm(quality~1,data=w4)
+wlf=step(wl0,scope=list(lower=wl0,upper=wl1),direction="forward")
+autoplot(wlf,which=c(1:2))
+summary(wlf)
+
+wlb=step(wl1)
+autoplot(wlb)
+summary(wlb)
+
+tab_model(wlb, wlf,show.aic=T,dv.labels=c("Backward stepwise for White Wine","Forward stepwise for White Wine"))
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+lcheck=lm(quality~free.sulfur.dioxide, data=r)
+autoplot(lcheck, which =c(1,2))
+
+ggplot(r, aes(x=free.sulfur.dioxide,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+
+lmvolatile.acidity=lm(quality~volatile.acidity, data=r)
+autoplot(lmvolatile.acidity, which =c(1,2))
+
+ggplot(r, aes(x=volatile.acidity,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+
+lmtotal.sulfur.dioxide=lm(quality~total.sulfur.dioxide, data=r)
+autoplot(lmtotal.sulfur.dioxide, which =c(1,2))
+
+ggplot(r, aes(x=total.sulfur.dioxide,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+
+lmtotal.sulfur.dioxide=lm(quality~total.sulfur.dioxide, data=r)
+autoplot(lmtotal.sulfur.dioxide, which =c(1,2))
+
+ggplot(r, aes(x=total.sulfur.dioxide,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+
+lmchlorides=lm(quality~chlorides, data=r)
+autoplot(lmchlorides, which =c(1,2))
+
+ggplot(r, aes(x=chlorides,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+
+ggplot(r, aes(x=pH,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+ggplot(r, aes(x=free.sulfur.dioxide,y=quality))+geom_point(size=2)+theme_classic()+geom_smooth(method="lm", se=T)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+library(sjPlot)
+sjPlot::tab_model(lmf,lmb,show.ci=T,show.aic=T,dv.labels=c("Forward model","Backward model"))
+
+
+
+```
+
+
+
+
+redo
+
+```{r}
+
+r4=r%>%select(quality,alcohol,sulphates,volatile.acidity)
+
+lm1=lm(quality~.,data=r4)
+lmbf=step(lm1)
+autoplot(lmbf,which=c(1:2))
+summary(lmbf)
+
+lm0=lm(quality~1,data=r4)
+lmff=step(lm0,scope=list(lower=lm0,upper=lm1),direction="forward")
+autoplot(lmff,which=c(1:2))
+summary(lmff)
+
+
+sjPlot::tab_model(lmbf,lmff,show.aic=T,dv.labels=c("Backward stepwise for Red Wine","Forward stepwise for Red Wine"))
+```
+```{r,fig.width=6,fig.height=2 }
+autoplot(lmbf,which=c(1:2))
+autoplot(wlf,which=c(1:2))
+
+```
+```{r, results = "asis"}
+equatiomatic::extract_eq(lmbf, intercept = "beta",use_coefs = TRUE)
+
+equatiomatic::extract_eq(wlf, intercept = "beta",use_coefs = TRUE)
+
+
+
+```
+
+$$
+\operatorname{Quality} = 2.61 + 0.31(\operatorname{alcohol}) + 0.68(\operatorname{sulphates}) - 1.22(\operatorname{volatile acidity}) + \epsilon
+$$$$
+
+
+
+\operatorname{Quality} = -48.57 + 0.41(\operatorname{alcohol}) - 2.11(\operatorname{volatile acidity}) + 51.67(\operatorname{density}) - 0.1(\operatorname{fixed acidity}) + \epsilon
+$$
+
+
+
+```{r}
+install.packages("lava",type="binary")
+library(caret)
+```
+
+
+```{r}
+
+cross=train(quality~alcohol+sulphates+volatile.acidity,data=r, method="lm",trControl=trainControl(method="cv",number=10,verboseIter=FALSE))
+
+cross
+
+
+
+```
+
+
+
+
+```{r}
+crossw=train(quality~alcohol+volatile.acidity+ density+fixed.acidity+chlorides , data=w, method="lm",trControl=trainControl(method="cv",number=10,verboseIter=FALSE))
+
+crossw
+
+#(quality, alcohol, volatile.acidity, residual.sugar, pH, sulphates, fixed.acidity)
+```
+
+```{r}
+knitr::kable(crossw$results,align="cll",dig=2,caption = "Predictive performance of multiple linear regression for White wine quality predictions.") %>% kable_paper(full_width = F,html_font = "Cambria")
+```
+
+```{r}
+knitr::kable(cross$results,align="cll",dig=2,caption = "Predictive performance of multiple linear regression for Red wine quality predictions.") %>% kable_paper(full_width = F,html_font = "Cambria")
+```
+
+
+
+
+```{r}
+
+modelinsampler=r%>%mutate(predicted=round(predict(lmbf,r)))%>% select(quality, predicted)
+modelinsampler
+insampler=mean(modelinsampler$quality==modelinsampler$predicted)
+insampler
+
+```
+```{r}
+
+modelinsamplew=w%>%mutate(predicted=round(predict(wlb,white)))%>% select(quality, predicted)
+modelinsamplew
+insamplew=mean(modelinsamplew$quality==modelinsamplew$predicted)
+insamplew
+
+
+```
+```{r}
+plot_model(lmff, type="pred", terms=c("sulphates", "alcohol","volatile.acidity"))
+```
+

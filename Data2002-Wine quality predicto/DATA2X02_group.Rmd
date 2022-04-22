@@ -1,0 +1,437 @@
+---
+title: "<span style='font-size: 10px'>DATA2X02 Group Assignment</style>"
+author:
+  - name: "Group: W13A Early 8"
+    affiliation: a
+# Abstract
+#abstract: |
+# Paper size for the document, values of letter and a4
+papersize: letter
+
+# Font size of the document, values of 9pt (default), 10pt, 11pt and 12pt
+fontsize: 11pt
+
+# Optional: Force one-column layout, default is two-column
+one_column: false
+
+# Optional: Enables lineo mode, but only if one_column mode is also true
+#lineno: true
+
+# Optional: Enable one-sided layout, default is two-sided
+#one_sided: true
+
+# Optional: Specify the depth of section number, default is 5
+secnumdepth: 3
+
+# Optional: include-after
+#include-after: somefile.tex
+
+# Optional: Skip inserting final break between acknowledgements, default is false
+skip_final_break: true
+
+# Optional: Bibliography 
+bibliography: pinp
+
+# Customize footer, eg by referencing the vignette
+footer_contents: "DATA2X02 Group Assignment"
+
+
+# Produce a pinp document
+output: 
+  pinp::pinp:
+    latex_engine: xelatex
+    number_sections: true
+
+# Required: Vignette metadata for inclusion in a package.
+vignette: >
+  %\VignetteIndexEntry{YourPackage-vignetteentry}
+  %\VignetteKeywords{YourPackage, r, anotherkeyword}
+  %\VignettePackage{YourPackage}
+  %\VignetteEngine{knitr::rmarkdown}
+  
+header-includes: 
+   \usepackage{wrapfig,subcaption,array,tabularx,multirow,caption} 
+   \usepackage[utf8]{inputenc} 
+   
+# always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+# <<<<<<< Updated upstream
+# 
+# =======
+# >>>>>>> Stashed changes
+library(tidyverse)
+library(lubridate)
+library(forcats)
+library(skimr)
+library("visdat")
+library(caret)
+library(tibble)
+library(plotly)
+library(cowplot)
+library("sjPlot")
+library(corrplot)
+library(ggpubr)
+library(kableExtra)
+library(gridExtra)
+library(kableExtra)
+library(ggfortify)
+library(sandwich)
+library(e1071)
+mykable <- function(dt, ...) {
+  kbl(dt, ...) %>% kable_material(c("striped", "hover", "condensed", "responsive"), full_width = F)}
+```
+
+\captionsetup[figure]{labelfont={it,bf,scriptsize},textfont={it,scriptsize},labelsep=colon}
+\captionsetup[table]{labelfont={it,bf,scriptsize},textfont={it,scriptsize},labelsep=colon}
+\captionsetup[FLOAT_TYPE]{labelformat=simple, labelsep=colon}
+
+```{r Importing, include= FALSE}
+white = read.table("winequality-white.csv",sep=";",header=TRUE)  %>% 
+  janitor::clean_names()
+red = read.table("winequality-red.csv",sep=";",header=TRUE)  %>% 
+  janitor::clean_names()
+
+```
+
+\vspace{-20truemm}
+
+# Abstract
+
+We aim to test the importance of alcohol content as a significant predictor of red and white wine quality in a dataset containing the physicochemical tests of red and white wine. This was measured by comparing the $R^{2}$ in a simple linear regression (SLR), containing only alcohol content and quality, to a multi-linear regression (MLR). The MLR was built through stepwise model selection, using inputs with a correlation of greater than 0.2 with wine quality. The results show that alcohol content is both significant and the most important predictor of red and white wine quality(p-value less than 0.001) as the there was only a 7-11% increase in the MLR $R^{2}$ compared to the SLR $R^{2}$ (19-23%).
+
+# Introduction and data exploration
+
+We observed 12 variables, 11 independent continuous variables and 1 dependent discrete variable, which were produced as a result of physicochemical tests performed on red and white wine from Portugal. The data also did not include useful variables such as brand, grape type or price. The data set was acquired from the University of California, Irvine. The data had a far larger number of observations for white wine compared to red.  Additionally, most of the quality results were medium quality with few being low or high. This was measured between 1 – 10, with 10 being of higher quality.
+
+On observation, alcohol(vol%) has the strongest correlation of 0.44 and 0.48 for white and red wine respectively. This prompted us to wonder **the extent to which alcohol content is the most important predictor for wine quality?**
+
+```{r observation_and_missing, message = FALSE, include=FALSE}
+#glimpse(white)
+#glimpse(red)
+
+#table(is.na(white))
+#table(is.na(red))
+
+```
+
+```{r correlation-var-white2,include=FALSE}
+cor(white[c(1 ,2, 4, 6, 8, 9, 10, 11)], white$quality)
+```
+
+```{r include=FALSE,alcohol_quality_scatterplots,fig.width=5,fig.height=2,fig.cap="Scatter plots of quality against alcohol.",fig.pos='H'}
+#  plots  of alcohol and quality
+p1 = ggplot(white, aes(x = alcohol, y = quality)) +
+  geom_point(alpha = 0.2, position = "jitter") + 
+  geom_smooth(method = "lm", se = F) + 
+  scale_y_continuous("Quality Rating for White Wine") + 
+  scale_x_continuous("Alcohol % for White Wine")
+
+p2 = ggplot(red, aes(x = alcohol, y = quality)) +
+  geom_point(alpha = 0.5, position = "jitter") +
+  geom_smooth(method = "lm", se = F) + 
+  scale_y_continuous("Quality Rating for Red Wine") + 
+  scale_x_continuous("Alcohol % for Red Wine")
+ggarrange(p1,p2)
+```
+
+```{r lin_check}
+#  chlorides, density, alcohol, volatile_acidit
+white_chlor <- ggplot(white, aes(x = chlorides, y = quality)) +
+  geom_point(alpha = 0.2, position = "jitter") + 
+  geom_smooth(method = "lm", se = F) + 
+  scale_y_continuous("Quality Rating for White Wine") + 
+  scale_x_continuous("Chlorides for White Wine")
+
+# removes the extreme outlier at 1.04, not sure if a good idea or what yet, but data appears far more correlated in graph now
+# white <- white %>%
+#  filter(density < 1.03)
+
+white_dens <- ggplot(white, aes(x = density, y = quality)) +
+  geom_point(alpha = 0.2, position = "jitter") + 
+  geom_smooth(method = "lm", se = F) + 
+  scale_y_continuous("Quality Rating for White Wine") + 
+  scale_x_continuous("Density for White Wine")
+
+white_volatile <- ggplot(white, aes(x = volatile_acidity, y = quality)) +
+  geom_point(alpha = 0.2, position = "jitter") + 
+  geom_smooth(method = "lm", se = F) + 
+  scale_y_continuous("Quality Rating for White Wine") + 
+  scale_x_continuous("Volatile_acidity for White Wine")
+
+#plot_grid(white_chlor, white_volatile, white_dens)
+
+
+red_sulphate <- ggplot(red, aes(x = sulphates, y = quality)) +
+  geom_point(alpha = 0.2, position = "jitter") + 
+  geom_smooth(method = "lm", se = F) + 
+  scale_y_continuous("Quality Rating for Red Wine") + 
+  scale_x_continuous("Sulphates for Red Wine")
+
+red_citric <- ggplot(red, aes(x = citric_acid, y = quality)) +
+  geom_point(alpha = 0.2, position = "jitter") + 
+  geom_smooth(method = "lm", se = F) + 
+  scale_y_continuous("Quality Rating for Red Wine") + 
+  scale_x_continuous("Citric Acid for Red Wine")
+
+red_volatile <- ggplot(red, aes(x = volatile_acidity, y = quality)) +
+  geom_point(alpha = 0.2, position = "jitter") + 
+  geom_smooth(method = "lm", se = F) + 
+  scale_y_continuous("Quality Rating for Red Wine") + 
+  scale_x_continuous("Volatile Acidity for Red Wine")
+
+#plot_grid(red_citric, red_volatile, red_sulphate)
+```
+
+# Analysis
+
+## Linear Regression Model
+Investigating this by modelling a simple linear regression of alcohol against quality gave an $R^{2}$ value of 0.19 for white wine and 0.23 for red wine. This shows that 19% of the variability in white wine and 23% of the variability in red wine can be explained by the change in alcohol. Additionally, both white and red wine show p-values that are low enough to reject the null hypothesis (less than 0.001), suggesting the slope parameter is statistically significant for both wines.
+
+\begin{table}[h]
+\begin{tabular}{ ccc } 
+\hline
+\textbf{} & \textbf{$R^2$} & \textbf{Adjusted $R^2$} \\
+\hline
+\textbf{White} & 0.1897 & 0.1896 \\ 
+\textbf{Red} & 0.2267 & 0.2263 \\
+\hline
+\end{tabular}
+\centering
+\caption{Summarize goodness of fit of SLR models.}
+\label{table:performance_slr}
+\end{table}
+
+\vspace{-6truemm}
+In order to measure the extent that alcohol influences wine quality we build a multiple regression model for each wine to measure the change in $R^{2}$ as we add new predictors. Care was taken to ensure all predictors are linearly correlated with the response variable, quality. Violations of linearity can result in a systematic error and may seriously hinder the quality of our models’ predictions. Taking the most correlated variables for white gives chlorides, volatile acidity, density and fixed acidity while for red we have citric acid, volatile acidity and sulphates. This can be seen in the shiny app whose link is provided in the appendix.
+
+```{r SLM, include=FALSE}
+
+#  Building SLM 
+lm_white = lm(quality ~ alcohol, data = white)
+lm_red = lm(quality ~ alcohol, data = red)
+
+crossslmw=train(quality~alcohol, data=white, method="lm",trControl=trainControl(method="cv",number=10,verboseIter=FALSE))
+crossslmr=train(quality~alcohol, data=red, method="lm",trControl=trainControl(method="cv",number=10,verboseIter=FALSE))
+slm=rbind(crossslmw$results, crossslmr$results)
+
+
+#  table for estimates and out of sample measures form 10 fold crossalidation
+tab_model(lm_white,lm_red,show.ci=F,show.aic=T,dv.labels=c("SLM for White Wine","SLM for Red Wine"))
+```
+
+```{r include=FALSE}
+knitr::kable(slm,align="cll",dig=2,caption = c("White and Red Wine SLM") 
+             )%>% kable_paper(full_width = F,html_font = "Cambria")
+
+```
+
+
+```{r, include=FALSE}
+# Filters dataset
+w4=white%>%select(quality,alcohol,volatile_acidity,density,fixed_acidity,chlorides)
+
+# Forward stpwise
+wl1=lm(quality~.,data=w4)
+wl0=lm(quality~1,data=w4)
+wlf=step(wl0,scope=list(lower=wl0,upper=wl1),direction="forward")
+autoplot(wlf,which=c(1:2))
+summary(wlf)
+
+# Backward stepwise
+wlb=step(wl1)
+summary(wlb)
+
+# Estimate outptus
+tab_model(wlb, wlf,show.aic=T,dv.labels=c("Backward stepwise for White Wine","Forward stepwise for White Wine"))
+
+equatiomatic::extract_eq(wlf, intercept = "beta",use_coefs = TRUE)
+
+```
+
+```{r include=FALSE}
+r4=red%>%select(quality,alcohol,sulphates,volatile_acidity, citric_acid)
+
+lm1=lm(quality~.,data=r4)
+lmbf=step(lm1, trace=F)
+
+# autoplot(lmbf,which=1:2)
+
+summary(lmbf)
+
+lm0=lm(quality~1,data=r4)
+lmff=step(lm0,scope=list(lower=lm0,upper=lm1),direction="forward",trace=F)
+# autoplot(lmff,which=1:2)
+# plot(lmff, which = 1:2)
+summary(lmff)
+
+sjPlot::tab_model(lmbf,lmff,show.aic=T,dv.labels=c("Backward stepwise for Red Wine","Forward stepwise for Red Wine"))
+
+equatiomatic::extract_eq(lmff, intercept = "beta",use_coefs = TRUE)
+```
+
+## Model interpretation
+
+The multi-linear regression models were built using forward and reverse stepwise selection for both datasets. In both cases, the red and white wine models were found to be identical. This evidence suggests that these models are robust and are suitable for use in our analysis.
+
+The red wine model incorporates sulphates, alcohol and volatile acidity, with a equation of 
+$$quality=2.61+0.31(alcohol)-1.22(volatile~acidity)$$
+\vspace{-8truemm}
+$$+0.68(sulphates)+\epsilon.$$ 
+
+All variables included in the model have highly significant p-values less than 0.001. Showing in table \ref{table:performance_mlr}, the $R^{2}$ and $R^{2}$ adjusted of 0.336 and 0.335 were observed respectively.
+
+More variables were found useful in constructing the white wine, with a equation of
+$$quality= -47.65 + 0.4(alcohol)-2.09(volatile\_acidity)$$
+\vspace{-8truemm}
+$$+ 50.91(density) -0.1(fixed\_acidity) -1.32(chlorides)+\epsilon.$$
+This is potentially a result of the increased sample size. Within the white wine dataset, alcohol, volatile acidity, density, fixed acidity and chlorides were found to be significant, where chlorides had a p-value of 0.014 with all other variables measuring below 0.001. As shown in table \ref{table:performance_mlr}, the model produced an $R^{2}$ and $R^{2}$ adjusted values of 0.256 and 0.255 respectively.
+
+The estimate for density was very large compared to the other variables to account for the low mean and variation in the values. Density has a positive estimate in the model despite its correlation with quality being negative. This is likely due to interlinearity between the independent variables, which can lead to an estimate of opposite sign to the correlation coefficient.
+
+\begin{table}[ht]
+\begin{tabular}{ ccc } 
+\hline
+\textbf{} & \textbf{$R^2$} & \textbf{Adjusted $R^2$} \\
+\hline
+\textbf{White} & 0.2561 & 0.2554 \\
+\textbf{Red} & 0.3359 & 0.3346 \\
+\hline
+\end{tabular}
+\centering
+\caption{Summarize goodness of fit of MLR models.}
+\label{table:performance_mlr}
+\end{table}
+
+\vspace{-8truemm}
+## Assumption checking
+
+Despite moderately weak linear relationships between predictors and wine quality, there is a lack of patterns in the residual plots, excluding striations which occur from measuring the discrete ‘quality’ variable, reinforcing an approximately linear relationship. Furthermore, the assumption for independence is satisfied as physicochemical tests are measured separately for each bottle of wine. The residual plot figure \ref{fig:red_resid} shows equal variance among red wine residuals but slight patterns of heteroskedasticity in white wine residuals showing by figure \ref{fig:white_resid}. Hence, heteroskedasticity corrected standard errors were used to compute p-values. This resulted in all converted p-values measuring below 0.001,including ‘Chlorides’. Despite slight deviations in the lower tails, residuals largely followed the QQ-line. Additionally with the large number of observations we can rely on the central limit theorem to satisfy the normality assumption.
+
+```{r include = FALSE}
+
+library(lmtest)
+library(sandwich)
+
+bptest(lmff)
+corrected_r_p=coeftest(lmff, vcov = vcovHC(lmff))[,4]
+# corrected_r_p
+
+
+bptest(wlf)
+corrected_w_p=coeftest(wlf, vcov = vcovHC(wlf))[,4]
+# corrected_w_p
+
+```
+
+## Performance evaluation
+
+A 10 fold cross validation test was conducted to measure out-of sample model performance. The $R^2$ values indicate 26% and 34% of the observations can be explained from white and red wine models, indicating poor insample performance. Further, the RMSE values show on average the predicted quality of white and red wine differed from actual quality by 0.76 and 0.66 respectively. Given rounding, this results in a constant one level difference in our predicted values, indicating fairly poor model performance. Thus, predicted values should be interpreted with care.
+
+```{r white_cv,include=FALSE}
+crossw=train(quality~alcohol+volatile_acidity+ density+fixed_acidity+chlorides, data=white, method="lm",trControl=trainControl(method="cv",number=10,verboseIter=FALSE))
+
+crossw
+```
+
+```{r include=FALSE}
+knitr::kable(crossw$results,align="cll",dig=2,caption = "Predictive performance of multiple linear regression for White wine quality predictions.") %>% kable_paper(full_width = F,html_font = "Cambria")
+```
+
+```{r red_cv,include=FALSE}
+crossr=train(quality~alcohol+sulphates+volatile_acidity,data=red, method="lm",trControl=trainControl(method="cv",number=10,verboseIter=FALSE))
+crossr
+
+```
+
+```{r include=FALSE}
+results = rbind(crossw$results,crossr$results)
+type = data.frame(c("White","Red"))
+results = cbind(type,results)
+names(results)[names(results) == "c..White....Red.."] <- "Wine type"
+knitr::kable(results,align="cll",dig=2,caption = "Predictive performance of multiple linear regression for white and red wine quality predictions.") %>% kable_classic(full_width = F,html_font = "Cambria")
+```
+
+# Results
+
+A 10 fold cross validation test was conducted to measure out-of sample model performance, giving the results from table \ref{table:performance_sum}. The $R^{2}$ values indicate 26% and 34% of the observations can be explained from white and red wine models, indicating poor out of sample performance. Further, the RMSE values show on average the predicted quality of white and red wine differed from actual quality by 0.76 and 0.66 respectively. Given rounding, this results in a constant one level difference in our predicted values, indicating fairly poor model performance. Suggesting predicted values should be interpreted with care.
+
+\begin{table}[h]
+\begin{tabular}{ ccccccc } 
+\hline
+\textbf{} &  \textbf{RMSE} & \textbf{$R^2$} & \textbf{MAE} & \textbf{RMSESD} & \text{$R^2$SD} & \textbf{MAESD}\\
+\hline
+\textbf{SLR White} & 0.80 &	0.19 &	0.63 &	0.02	& 0.04	& 0.02 \\
+\textbf{SLR Red} & 0.71 &	0.23 &	0.56 &	0.05	& 0.07	& 0.04 \\
+\textbf{MLR White} & 0.76 &	0.26	& 0.60	& 0.03	& 0.03 & 0.02 \\
+\textbf{MLR Red} & 0.66 &	0.34 & 0.52	& 0.03	& 0.06 &	0.02 \\
+\hline
+\end{tabular}
+\centering
+\caption{Summarize performance of models.}
+\label{table:performance_sum}
+\end{table}
+
+\vspace{-6truemm}
+Alcohol appears to be a significant predictor in both red and white wine models with a p-value less than 0.001. For a 1 unit increase in alcohol, there is an increase of 0.31 in white and 0.40 in red quality. As alcohol content explains 19% (red) and 23% (white) of the simple linear model, with only a 7-11% increase in explanatory power for adding additional variables in the multilinear model, this implies alcohol content is the most influential predictor in determining the quality of red and white wine.
+
+```{r include=FALSE}
+
+rs=data.frame(c(summary(lm_white)$r.square,summary(lm_red)$r.square, summary(wlf)$r.square, summary(lmff)$r.square), c(summary(lm_white)$adj.r.squared,summary(lm_red)$adj.r.squared, summary(wlf)$adj.r.squared, summary(lmff)$adj.r.squared))
+# rs
+colnames(rs)=c("R-squared", "Adjusted R-squared")
+rownames(rs)=c("SLR White", "SLM Red", "MLM White", "MLM Red")
+kable(rs,digits=4)%>% kable_paper(full_width = F,html_font = "Cambria")
+
+```
+
+# Discussion and conclusion
+
+Although models developed are proven to be significant, there have been several limitations.
+The differing number of observations between red and white wine resulted in inconsistent variances of data, which can impact the quality of inferences. However, as we are focused on comparing the $R^2$ values instead of estimating predictions, this is less of a concern. If grapes are from the same batch, the assumption of independence could be violated, making the inference of results unreliable. In addition, variables are not necessarily linear as the highest correlation  coefficient with wine quality measured 0.48. Hence, as supported by Cortez (2019), MLR is the worst model for predicting wine quality for this dataset. Future studies may focus on wine quality predictions by evaluating alternative machine learning techniques such as K-nearest neighbor and random forest which are able to capture non-linearity. 
+
+\newpage
+# References
+
+- P. Cortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis.
+Modeling wine preferences by data mining from physicochemical properties. In Decision Support Systems, Elsevier, 47(4):547-553, 2009.
+- Alboukadel Kassambara (2020). ggpubr: 'ggplot2' Based Publication Ready Plots. R package version 0.4.0.
+  https://CRAN.R-project.org/package=ggpubr
+- Hao Zhu (2020). kableExtra: Construct Complex Table with 'kable'and Pipe Syntax. R package version 1.3.1. https://CRAN.R-project.org/package=kableExtra
+- Yuan Tang, Masaaki Horikoshi, and Wenxuan Li. "ggfortify: Unified Interface to Visualize Statistical Result of Popular R Packages." The R Journal 8.2 (2016): 478-489.
+- Max Kuhn (2020). caret: Classification and Regression Training. R package version 6.0-86. https://CRAN.R-project.org/package=caret
+- Wickham et al., (2019). Welcome to the tidyverse. Journal of
+  Open Source Software, 4(43), 1686,
+  https://doi.org/10.21105/joss.01686
+  
+# Appendix
+
+```{r fig.width=7,fig.align='center',echo=FALSE,fig.cap="Correlation matrices for red and white wine data. The correlation metric is the Pearson's correlatin coefficients.",fig.pos='H'}
+library(ggcorrplot)
+mut_red = red  
+names(mut_red)[names(mut_red) == "total_sulfur_dioxide"] <- "total_SO2"
+names(mut_red)[names(mut_red) == "free_sulfur_dioxide"] <- "free_SO2"
+mut_white = white 
+names(mut_white)[names(mut_white) == "total_sulfur_dioxide"] <- "total_SO2"
+names(mut_white)[names(mut_white) == "free_sulfur_dioxide"] <- "free_SO2"
+corr_red <- round(cor(red),1)
+corr_white <- round(cor(white),1)
+pr = ggcorrplot(corr_red)+ggtitle("Red data")+theme(
+plot.title = element_text(size=12, face="bold.italic",hjust = 0.5), axis.text.x = element_text(size=9),axis.text.y = element_text(size=10))
+pw = ggcorrplot(corr_white)+ggtitle("White data")+theme(
+plot.title = element_text(size=12, face="bold.italic",hjust = 0.5), axis.text.x = element_text(size=9),axis.text.y = element_text(size=10))
+ggarrange(pr, pw,common.legend =TRUE)
+```
+
+
+```{r red_resid, fig.width=3.5,fig.height=1.5,fig.cap="Residual plot and normal Q-Q plot of the stepwise regression model for red wine data.",fig.pos='H'}
+autoplot(lmbf,which=c(1:2))
+```
+
+```{r white_resid, fig.width=3.5,fig.height=1.5,fig.cap="Residual plot and normal Q-Q plot of the stepwise regression model for white wine data.",fig.pos='H'}
+autoplot(wlf,which=c(1:2))
+```
+
+**Shiny app:** https://stephan-iie.shinyapps.io/Linearity/?_ga=2.34896929.1856433187.1605152041-1797514058.1605152041
