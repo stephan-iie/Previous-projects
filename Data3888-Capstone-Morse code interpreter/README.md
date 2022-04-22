@@ -1,4 +1,5 @@
 # 3888-Capstone
+This project creates a morse code interpreter using a Spikerbox which detects eye movements.
 
 # Code Guide
 
