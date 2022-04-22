@@ -1,0 +1,122 @@
+*{
+    box-sizing: border-box;
+    margin:0;
+}
+
+body{
+    font-family: "Inter";
+    font-style: normal;
+
+    background-color: #f5f5f5 ;
+    
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+/* Ensures Links are not purple or underlined */
+a:visited{
+    text-decoration: none;
+    color: black;
+}
+
+/* Navigation*/
+.nav-container{
+    height: 60px;
+    background-color: #f5f5f5;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.07);
+}
+
+.wrapper{
+    max-width: 100%;
+    margin:0 auto;
+}
+
+nav{
+    display: flex; /*ensures we can have things next to each other*/
+    align-items: center;
+    bottom:0;
+    justify-content: space-between;
+    height: 60px;
+}
+
+/*navigation lists -> not the nav tag indicates seperation */
+
+nav ul{
+    display: flex;
+    color: black;
+
+}
+
+.nav-items li{
+    list-style-type: none;
+    margin-left: 50px;
+    font-family: 'Inter';
+    color: black;
+    font-weight: 600;
+    font-size: 18px;
+    
+}
+.nav-items a{
+    color: black;
+
+    
+}
+
+
+
+
+.skills_content{
+   
+position: absolute;
+width: 838px;
+height: 194px;
+left: 249px;
+top: 240px;
+
+}
+
+.header_container{
+    height: 710px;
+    background-image: url("img/background2.svg");
+    background-position: left;
+    background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/*Styling the table. Put exact position on page. Block display puts things as blocks stacked on top of each other on page  */
+
+.skills_table{
+    display: block;
+    position: absolute;
+    width: 1020px;
+    height: 49px;
+    left: 240px;
+    top: 430px;
+
+}
+/*Rounded edges and pads so margins around the edge */
+
+#skills_table td, #skills_table th {
+    padding: 8px;
+    border-radius: 5px ;
+
+  }
+
+  /*Changes colour of every second row in table */
+
+  #skills_table tr:nth-child(even){background-color: rgba(196, 196, 196, 0.33);;}
+/*Changes color when hovering over the row */
+
+  #skills_table tr:hover {background-color: #ddd;}
+/*Changes the header background colour and padding, aligns text to the left */
+
+  
+#skills_table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #D4A99B;
+    color: white;
+  }

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name ="viewport" content ="width=device-width, initial=scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content = "ie=edge"/>
+    <title>Welcome</title>
+    <link rel="stylesheet" href="projects.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter" rel="stylesheet">
+
+</head>
+<body>
+    <div class="nav-container">
+        <div class="wrapper">
+            <nav>
+                <ul class="nav-items">
+                    <li>
+                        <a href="about.html" >About</a>
+                    </li>
+                    <li>
+                        <a href="skills.html" >Skills</a>
+                    </li>
+                    <li>
+                        <a href="projects.html" >Projects</a>
+                    </li>
+                    <li>
+                        <a href="hobby.html" >Hobby</a>
+                    </li>
+                    
+                </ul>
+                <a class ="nav-btn-container" href="https://www.linkedin.com/in/stepliu/" style="text-decoration: none;margin-right: 50px;">
+                    <img class="Linkedin" src="img/linkedin-logo 1.svg" alt=""/>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!--- Contents of the page --->
+    <div class = "header_container">
+        <div class="wrapper">
+            <header>
+                <!--- Description: h1 is header, br is break, p is paragraph  --->
+                <div class = "skills_content">
+                    <h1>Projects</h1>
+                    <br></br>
+                    <p>
+                        Within my degree, I’ve applied my technical skills on technical projects, combined my understanding of commerce and technology to Case competitions and volunteer consulting projects, as well as developed some design skills as I undertook roles in a student society.  
+                         <br></br>
+                         Below shows some of these projects (given some cannot be displayed for confidentiality reasons):
+
+                    </p>
+                </div>
+                <br></br>
+                <!--- Divide into each sub category: university project --->
+                <div class="University_projects">
+                    <h2>University Projects</h2>
+                    <br></br>
+                    <!--- List with each list element having image and descriotion below it  --->
+                    <ul id="uni">
+                        <li>
+                            <img src = "img/Bomberman.png" alt="" style="box-shadow: 20px 20px 35px #d0d0d0;
+                            border-radius: 5px;"/>
+                            <br></br>
+                            Recreating Bomberman in Java with OOP.
+                        </li>
+                        <li>
+                            <img src = "img/morse_code.png" alt="" style="box-shadow: 20px 20px 35px #d0d0d0;
+                            border-radius: 5px;"/>
+                            <br></br>
+                            Creating a 3 class classifier translating blinking into morse code using Python and R. 
+                        </li>
+                        <li>
+                            <img src = "img/covid.png" alt="" style="box-shadow: 20px 20px 35px #d0d0d0;
+                            border-radius: 5px;"/>
+                            <br></br>
+                            Creating a LGA covid-19 vulnerability classifier with Python, webscraping and SQL. 
+                        </li>
+                        
+                    </ul>
+                    <!--- Puts link into an image (currently nothing since no github prepared) --->
+                    <a class ="github_button" href="" >
+                        <img class="github" src="img/Group 15.svg" alt=""/>
+                    </a>
+
+                </div>
+                <!--- Divide into each sub category: case comps --->
+
+                <div class = "Case_comps">
+                    
+                    <h2>Case Competitions</h2>
+                    <br></br>
+                    <ul>
+                        <!--- Image --->
+                        <li>
+                        <img src = "img/case.png" alt="" style="box-shadow: 20px 20px 35px #d0d0d0;
+                                border-radius: 5px;"/>
+                        </li>
+                        <!--- Text describing  --->
+                        <li>
+                    <br></br>
+                    <p>
+                    1st Place in the Accenture X Tech for social Good National Strategy Challenge 
+                    <br></br>
+                    Exploring the potential of AI and predictive policing as a solution to the growing crime rates, increasing spotlight on police brutality and raicial profiling.
+                    </p>
+                    </li>
+                     </ul>
+                    <br></br>
+                    <!--- Adding a button to link to the post (embeds link into image ) --->
+                    <a class ="report_button" href="https://www.linkedin.com/posts/harish-mano-b87939188_predictive-policing-activity-6850279996636966912-Fa2f?utm_source=linkedin_share&utm_medium=member_desktop_web" >
+                        <img class="report" src="img/Group 14.svg" alt=""/>
+                    </a>
+                    
+                </div>
+
+                <!--- Divide into each sub category: ASOC marketing  --->
+                <div class="ASOC">
+                    
+                    <h2>Marketing for ASOC</h2>
+                    <br></br>
+                    <!---List of images  --->
+                    <ul id="asoc">
+                        <li>
+                            <img src = "img/Asoc1.png" alt="" style="box-shadow: 20px 20px 35px #d0d0d0;
+                            border-radius: 5px;"/>
+                            <br></br>
+                        </li>
+                        <li>
+                            <img src = "img/Asoc2.png" alt="" style="box-shadow: 20px 20px 35px #d0d0d0;
+                            border-radius: 5px;"/>
+                            <br></br>
+                        </li>
+                        <li>
+                            <img src = "img/Asoc3.png" alt="" style="box-shadow: 20px 20px 35px #d0d0d0;
+                            border-radius: 5px;"/>
+                            <br></br>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </header>
+        </div>
+
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

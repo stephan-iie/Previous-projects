@@ -1,0 +1,151 @@
+---
+title: "function"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, message=FALSE}
+library("stringdist")
+library(tidyverse)
+library(tuneR)
+library(devtools)
+library(ggplot2)
+library(tsfeatures)
+```
+
+
+```{r}
+
+
+streaming_classifier = function(wave_file,i,  
+                                window_size = wave_file[[i]]@samp.rate, 
+                                increment = window_size/3, thresh=30){
+
+  #this getting x and y 
+  Y = wave_file[[i]]@left # all data is stored here
+  xtime = seq_len(length(wave_file[[i]]))/wave_file[[i]]@samp.rate #seq len
+  #plot(xtime, Y)
+  
+  #initializing variables
+  predicted_labels = c() #stores predicted
+  lower_interval = 1 #used to increment window 
+  max_time = max(xtime)*window_size
+
+
+  predicted=c()
+  
+  #initialing signal vector 
+  signal=c()
+  signal=append(signal, 0)
+  
+  switch=FALSE
+  
+  while(max_time > lower_interval + window_size)
+  {
+    upper_interval = lower_interval + window_size
+    interval = Y[lower_interval:upper_interval] 
+    xinterval=xtime[lower_interval:upper_interval]#gets corresponding time
+
+
+    Y_feat <- cbind(tsfeatures(interval,
+             c("crossing_points")),
+  tsfeatures(interval,
+             c("mean","var"), scale=FALSE, na.rm=TRUE)) 
+
+  #print(Y_feat$crossing_points)
+
+    if (Y_feat$crossing_points>thresh ){ #makes sure the switch is false if it is greater
+      switch=FALSE
+    }
+    
+    if( switch ==FALSE && signal[length(signal)!=0]){ #checks if we read a signal before
+      
+      if (signal[1]<signal[length(signal)] && signalclass==FALSE){
+        print("L")
+        predicted=append(predicted, "L")
+        signalclass=TRUE
+      }
+      if (signal[1]>signal[length(signal)] && signalclass==FALSE){
+        print("R")
+        predicted=append(predicted, "R")
+        signalclass=TRUE
+      }
+      # if (signalclass==TRUE){
+      #   print(signal)
+      # }
+      
+      }
+      
+    if (max_time < lower_interval + window_size + increment){#for last one if it ends by last window and needs to be classified
+
+      if (signal[1]<signal[length(signal)] && signalclass==FALSE){
+        print("L")
+        predicted=append(predicted, "L")
+        signalclass=TRUE
+      }
+      if (signal[1]>signal[length(signal)] && signalclass==FALSE){
+        print("R")
+        predicted=append(predicted, "R")
+        signalclass=TRUE
+      }
+      
+      # if (signalclass==TRUE){ checking what the vector of values is 
+      #   print(signal)
+      # }
+    }
+      
+    
+    if (Y_feat$crossing_points<=thresh && switch==FALSE){
+      signal=c()
+      switch=TRUE
+      signalclass=FALSE
+    } 
+    
+    
+    if (switch==TRUE){ #appends the mean to the signal 
+      signal=append(signal,Y_feat$mean )
+    }
+    
+    lower_interval = lower_interval + increment 
+   ## end while
+}
+
+    return (predicted)
+  
+}## end function
+
+
+```
+
+
+```{r}
+
+
+predacc=  function(filenames, predictions){
+  accuracy=c()
+  
+  
+  for (i in 1:length(filenames)){
+    
+    changes=stringdist(paste(predictions[[i]], collapse = ''),strsplit(filenames[i], "_")[[1]][1], method="lv")/nchar(strsplit(filenames[i], "_")[[1]][1])
+    
+    if (changes==0){
+      changes=1
+    }
+    else if (changes==1){
+      changes=0
+    }
+    
+    accuracy=append(accuracy,changes)
+  
+
+  }
+  return (accuracy)
+  
+}
+
+```

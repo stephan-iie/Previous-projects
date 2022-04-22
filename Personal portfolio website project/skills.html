@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name ="viewport" content ="width=device-width, initial=scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content = "ie=edge"/>
+    <title>Welcome</title>
+    <link rel="stylesheet" href="skills.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter" rel="stylesheet">
+
+</head>
+<body>
+    <div class="nav-container">
+        <div class="wrapper">
+            <nav>
+                <ul class="nav-items">
+                    <li>
+                        <a href="about.html" >About</a>
+                    </li>
+                    <li>
+                        <a href="skills.html" >Skills</a>
+                    </li>
+                    <li>
+                        <a href="projects.html" >Projects</a>
+                    </li>
+                    <li>
+                        <a href="hobby.html" >Hobby</a>
+                    </li>
+                    
+                </ul>
+                <a class ="nav-btn-container" href="https://www.linkedin.com/in/stepliu/" style="text-decoration: none;margin-right: 50px;">
+                    <img class="Linkedin" src="img/linkedin-logo 1.svg" alt=""/>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!--- Contents of the page --->
+
+    <div class = "header_container">
+        <div class="wrapper">
+            <header>
+                 <!--- Adds the current text, h1 is header, br is break, p is pargraph  --->
+                <div class = "skills_content">
+                    <h1>Skills and Experience</h1>
+                    <br></br>
+                    <p>
+                        Over the past 3-4 years of studying, I’ve learnt to use a variety of coding languages to build machine learning models, classifiers, games, and design a few things here and there. In my own past time, I’ve learnt to use deisgn softwares such as Adobe Photoshop, Lightroom and Premiere Pro. 
+                         <br></br>
+                        Below is how I would rank my proficiency and skill levels for these skills.  
+                    </p>
+                </div>
+                 <!--- Creates a skills table - tr is row in table, th is header, td is table data. It is definining per row  --->
+                <div class="skills_table">
+                    <table id = "skills_table">
+                        <tr>
+                            <th>Skill</th>  <!--- First entry is the name of the skill --->
+                            <th>Proficiency</th>  
+                            <th>Use</th>
+                        </tr>
+                        <tr>
+                            <td>1 Python</td> <!--- First entry is the name of the skill --->
+                            <td><img src="img/Group 8.svg" width="100"></td> <!--- An image with progress bar --->
+                            <td>Model computation/simlulation, developing machine learning models, algorithmn computation, webscraping</td>
+                        </tr>
+                        <tr>
+                            <td>2 R</td>
+                            <td><img src="img/Group 12.svg" width="100"></td>
+                            <td>Training statistical models and classifiers, statistical analysis</td>
+                        </tr>
+                        <tr>
+                            <td>3 SQL</td>
+                            <td><img src="img/Group 10.svg" width="100"></td>
+                            <td>Constructing databases on PostGreSQL</td>
+                        </tr>
+                        <tr>
+                            <td>4 Java</td>
+                            <td><img src="img/Group 10.svg" width="100"></td>
+                            <td>OOP</td>
+                        </tr>
+                        <tr>
+                            <td>5 HTML, CSS, Javascript</td>
+                            <td><img src="img/Group 11.svg" width="100"></td>
+                            <td>Simple front end design, Google script editor</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </header>
+        </div>
+
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

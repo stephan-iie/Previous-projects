@@ -1,0 +1,192 @@
+*{
+    box-sizing: border-box;
+    margin:0;
+}
+
+body{
+    font-family: "Inter";
+    font-style: normal;
+
+    background-color: #f5f5f5 ;
+    
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+a:visited{
+    text-decoration: none;
+    color: black;
+}
+
+/* Navigation*/
+.nav-container{
+    height: 60px;
+    background-color: #f5f5f5;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.07);
+}
+
+.wrapper{
+    max-width: 100%;
+    margin:0 auto;
+}
+
+nav{
+    display: flex; /*ensures we can have things next to each other*/
+    align-items: center;
+    bottom:0;
+    justify-content: space-between;
+    height: 60px;
+}
+
+/*navigation lists -> not the nav tag indicates seperation */
+
+nav ul{
+    display: flex;
+    color: black;
+
+}
+
+.nav-items li{
+    list-style-type: none;
+    margin-left: 50px;
+    font-family: 'Inter';
+    color: black;
+    font-weight: 600;
+    font-size: 18px;
+    
+}
+.nav-items a{
+    color: black;
+
+    
+}
+
+.about_image{
+    position: absolute;
+width: 401px;
+height: 390px;
+left: 140px;
+top: 200px;
+
+}
+
+
+
+
+.skills_content{
+   
+    position: absolute;
+    width: 600px;
+    height: 194px;
+    left: 249px;    
+    top: 240px;
+    
+    }
+
+header ul{
+    display: flex;
+    justify-content: space-between;
+}
+
+header li{
+    list-style-type: none;
+    
+}
+
+
+
+.header_container{
+    height: 1915px;
+    background-image: url("img/background3.svg");
+    background-repeat: no-repeat;
+}
+
+/* Absolute placment of the container */
+
+.University_projects{
+    
+    position: absolute;
+    width: 800px;
+    height: 375px;
+    left: 249px;
+    top: 520px;
+    }
+
+/* Spacing between each of the projects */
+
+#uni li{
+    margin-left: 10px ;
+    width: 308px;
+}
+/* Ensures images all the same size and text stacked below it  */
+
+#uni img{
+    width:308px;
+    height:202px;
+    display:block;
+}
+/* Sizing and placmene tof button */
+
+.github_button img{
+    position: absolute;
+    left: 50%;    
+    top: 400px;
+    width: 190px;
+    height: 50px;
+
+}
+/* Absolute placment of the container */
+
+.Case_comps{
+    
+    position: absolute;
+    width: 800px;
+    height: 300px;
+    left: 249px;
+    top: 995px;
+    }
+/* Sizing of the image and spacing between each element in lis t */
+
+.Case_comps img{
+    width:308px;
+    height:202px;
+    float:left;
+}
+.Case_comps li{
+    margin:20px;   
+}
+/* Absolute placment and sizing of the button  */
+
+.report_button img{
+    width: 190px;
+height: 50px;
+position: absolute;
+    left: 50%;    
+    top: 325px;
+}
+/* Absolute placment of the container */
+
+.ASOC{
+
+    position: absolute;
+    width: 800px;
+    height: 375px;
+    left: 249px;
+    top: 1420px;
+    }
+/* Margin between each image and same image size */
+
+#asoc li{
+    margin-left: 20px;
+
+}
+#asoc img{
+    width:300px;
+    height:300px;
+    display:block;
+
+}
+    

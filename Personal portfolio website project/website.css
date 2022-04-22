@@ -1,0 +1,100 @@
+*{
+    box-sizing: border-box;
+    margin:0;
+}
+/* Gets font family from google fonts, sets background image to image in folder. */
+
+body{
+    font-family: "Inter";
+    font-style: normal;
+
+    background-color: #f5f5f5 ;
+    background-image: url("img/Background.svg");
+    background-position: right;
+    background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Ensures Links are not purple or underlined */
+a{
+    text-decoration: none;
+    color: black;
+}
+
+a:visited{
+    text-decoration: none;
+    color: black;
+}
+
+/* Navigation*/
+.nav-container{
+    height: 60px;
+    background-color: #f5f5f5;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.07);
+}
+
+.wrapper{
+    max-width: 100%;
+    margin:0 auto;
+}
+
+nav{
+    display: flex; /*ensures we can have things next to each other*/
+    align-items: center;
+    bottom:0;
+    justify-content: space-between;
+    height: 60px;
+}
+
+/*navigation lists -> not the nav tag indicates seperation */
+
+nav ul{
+    display: flex;
+    color: black;
+
+}
+
+.nav-items li{
+    list-style-type: none;
+    margin-left: 50px;
+    font-family: 'Inter';
+    color: black;
+    font-weight: 600;
+    font-size: 18px;
+    
+}
+.nav-items a{
+    color: black;
+
+    
+}
+
+/* Sizes image and places direclty onto page*/
+
+.about_image{
+    position: absolute;
+width: 401px;
+height: 390px;
+left: 140px;
+top: 200px;
+
+}
+
+
+
+.about_content{
+    position: absolute;
+width: 680px;
+height: 190px;
+left: 620px;
+top: 330px;
+font-size: 14px;
+
+}
+
+.header_container{
+    height: 710px;
+
+}
+
+

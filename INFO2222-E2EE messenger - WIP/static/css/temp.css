@@ -1,0 +1,143 @@
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+#chatWindow{
+	width:100%;
+	height: 550;;
+    background:#eff3f7;
+
+}
+#container{
+	width:100%;
+	height:650px;
+	background:#eff3f7;
+	margin:0 auto;
+	font-size:16;
+	border-radius:5px;
+	overflow:hidden;
+    display: flex;
+}
+#aside{
+	width:300;
+	height:650px;
+    padding: 5px;
+    float: left;
+	background-color:#3b3e49;
+	display:inline-block;
+	vertical-align:top;
+    color: white;
+}
+#main {
+	width:100%;
+	height:650px;
+	display:inline-block;
+	vertical-align:top;
+    color: black;
+}
+
+#typing {
+    width:100%;
+    height: 100px;
+    vertical-align: bottom;
+
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    padding: 0;
+    display: block;
+    margin: 0 auto;
+    max-height: 45%;
+    max-width: 45%;
+}
+
+html, body, {
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+}
+
+#friendList { 
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 300px;
+    height: 100%;
+    list-style-type: none;
+
+}
+
+.friend {
+    width: 300px;
+    height: 60px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+.friend img {
+width: 45px;
+height: 45px;
+border-radius: 30px;
+border: 2px solid #AAA;
+object-fit: cover;
+margin-left: 5px;
+margin-right: 10px;
+}
+
+.error {
+    color: red;
+}
+
+.Friend_name{
+    color: white;
+
+}
+#messages{
+    background:#eff3f7;
+    display: block;
+    float: none;
+}
+
+.your_messages {
+    color: #111;
+    background:#eff3f7;
+    display: block;
+    float: none;
+}
+
+.friend_messages{
+    color: crimson;    
+    background:#eff3f7;
+    display: block;
+    float: none;
+
+}

@@ -1,0 +1,38 @@
+DROP TABLE IF EXISTS Users;
+-- status: 0 means logged out, 1 means logged in
+CREATE TABLE Users(
+            username VARCHAR(30) PRIMARY KEY,
+            password bit varying(5) NOT NULL,
+            status INTEGER DEFAULT 0,
+            admin INTEGER DEFAULT 0,
+            pkey TEXT UNIQUE,
+            spkey TEXT UNIQUE
+	);
+
+-- To do: Add columns (pk, certificate)
+
+DROP TABLE IF EXISTS Messages;
+CREATE TABLE Messages(
+                    sender VARCHAR(30) NOT NULL,
+                    receiver VARCHAR(30) NOT NULL,
+                    msg TEXT,
+                    msgtime TIMESTAMP
+                    );
+
+-- To do: Add column (session key)
+
+DROP TABLE IF EXISTS FriendList;
+CREATE TABLE FriendList(
+                    username VARCHAR(30) NOT NULL,
+                    friend VARCHAR(30) NOT NULL,
+	   				FOREIGN KEY (username) REFERENCES Users(username)
+                    );
+
+
+DROP TABLE IF EXISTS Session;
+CREATE TABLE Session(
+                    conversation VARCHAR(30) NOT NULL,
+                    ekey TEXT UNIQUE,
+                    skey TEXT UNIQUE
+
+	   				);
