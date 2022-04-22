@@ -1,2 +1,2 @@
-# W13A_early_8
-Project group W13A_early_8
+# Data2002 project
+Creating linear regression model predicting wine quality. Additional  hypothesis testing included inside main RMD file.
